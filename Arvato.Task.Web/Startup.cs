@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,6 +48,14 @@ namespace Arvato.Task.Web
             // Add the processing server as IHostedService
             services.AddHangfireServer();
 
+            services.AddSwaggerGen(c => {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Arvato Task",
+                    Version = "v1"
+                });
+            });
+
 
             services.AddRazorPages();
             services.AddTransient<IBaseRepository, BaseRepository>();
@@ -71,6 +80,11 @@ namespace Arvato.Task.Web
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json"," Arvato Task V1 ");
+                    });
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

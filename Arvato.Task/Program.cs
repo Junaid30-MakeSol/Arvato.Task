@@ -87,11 +87,11 @@ namespace Arvato.Task
 
                 case 2:
                     var currencyDate = serviceProvider.GetService<IFixerManager>();
-                   //var data  = currencyDate.GetLatestCurrency(symbols,bas);
+                   //currencyDate.GetLatestCurrency(symbols,bas);
                     recurringJobManager.AddOrUpdate("Run daily",
                          () => currencyDate.GetLatestCurrency(symbols, bas),
                          Cron.Daily);
-                   
+
                     break;
 
                 default:

@@ -8,8 +8,10 @@ using Arvato.Task.Fixer.Models.Rate;
 using AutoMapper;
 using log4net;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using RestSharp;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Arvato.Task.Fixer.Managers
@@ -47,7 +49,7 @@ namespace Arvato.Task.Fixer.Managers
             return response.Data;
         }
 
-        public RatesResponseModel GetLatestCurrency(string symbols, string bas)
+        public void GetLatestCurrency(string symbols, string bas)
         {
             _log.Debug($"Started GetLatest Currenecy request with symbols:{symbols} - base: {bas}");
             var requestUrl = string.Format(_configuration["Fixer:LatestCurrency"],symbols,bas);
@@ -58,10 +60,12 @@ namespace Arvato.Task.Fixer.Managers
             request.AddHeader("content-type", "application/json");
             request.AddHeader("apikey", fixerApiKey);
 
-            var response = client.Execute<RatesResponseModel>(request);
+            var response = client.Execute(request);
             _log.Info(string.Format("Response of authorize request: {0}", response.Content));
 
-            
+            List<Rates> rates = new List<Rates>();
+
+            var json = JsonConvert.SerializeObject(response);
 
             //var baseModel = new BaseModel
             //{
@@ -84,7 +88,6 @@ namespace Arvato.Task.Fixer.Managers
 
 
             Console.WriteLine(response.Content);
-            return response.Data;
         }
     }
 }
