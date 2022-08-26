@@ -189,8 +189,5 @@ namespace Arvato.Task.Fixer.Models.Fixer
     }
 
 
-    public class Ra
-    {
-        public List<Rates> Rat { get; set; }
-    }
+
 }

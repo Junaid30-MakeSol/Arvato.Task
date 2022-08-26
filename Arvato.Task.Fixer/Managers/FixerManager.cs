@@ -1,5 +1,7 @@
 ﻿using Arvato.Task.DB.Interfaces;
 using Arvato.Task.DB.Models.Base.Dto;
+using Arvato.Task.DB.Models.Currency.Dto;
+using Arvato.Task.DB.Models.Rate.Dto;
 using Arvato.Task.Fixer.Interfaces;
 using Arvato.Task.Fixer.Models.Base;
 using Arvato.Task.Fixer.Models.Currency;
@@ -12,6 +14,7 @@ using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Arvato.Task.Fixer.Managers
@@ -24,7 +27,7 @@ namespace Arvato.Task.Fixer.Managers
         private readonly IBaseRepository _baseRepository;
         private readonly IRateRepository _rateRepository;
         private readonly IMapper _mapper;
-        public FixerManager(IMapper mapper, IConfiguration configuration, ICurrencyRepository currencyRepository, IBaseRepository baseRepository, IRateRepository rateRepository )
+        public FixerManager(IMapper mapper, IConfiguration configuration, ICurrencyRepository currencyRepository, IBaseRepository baseRepository, IRateRepository rateRepository)
         {
             _configuration = configuration;
             _baseRepository = baseRepository;
@@ -32,10 +35,10 @@ namespace Arvato.Task.Fixer.Managers
             _rateRepository = rateRepository;
             _mapper = mapper;
         }
-        public ConversionResponseModel GetConvert(string to, string from, int amount,string date)
+        public ConversionResponseModel GetConvert(string to, string from, int amount, string date)
         {
             _log.Debug($"Started GetConvert Currenecy request with to:{to} - from: {from} - amount: {amount}");
-            var requestUrl = string.Format(_configuration["Fixer:CurrencyConvert"], to, from, amount,date);
+            var requestUrl = string.Format(_configuration["Fixer:CurrencyConvert"], to, from, amount, date);
             var client = new RestClient(requestUrl);
 
             var fixerApiKey = _configuration["Fixer:APIKey"];
@@ -49,10 +52,10 @@ namespace Arvato.Task.Fixer.Managers
             return response.Data;
         }
 
-        public void GetLatestCurrency(string symbols, string bas)
+        public RatesResponseModel GetLatestCurrency(string symbols, string bas)
         {
             _log.Debug($"Started GetLatest Currenecy request with symbols:{symbols} - base: {bas}");
-            var requestUrl = string.Format(_configuration["Fixer:LatestCurrency"],symbols,bas);
+            var requestUrl = string.Format(_configuration["Fixer:LatestCurrency"], symbols, bas);
             var client = new RestClient(requestUrl);
 
             var fixerApiKey = _configuration["Fixer:APIKey"];
@@ -60,34 +63,70 @@ namespace Arvato.Task.Fixer.Managers
             request.AddHeader("content-type", "application/json");
             request.AddHeader("apikey", fixerApiKey);
 
-            var response = client.Execute(request);
+            var response = client.Execute<RatesResponseModel>(request);
             _log.Info(string.Format("Response of authorize request: {0}", response.Content));
 
-            List<Rates> rates = new List<Rates>();
-
-            var json = JsonConvert.SerializeObject(response);
-
-            //var baseModel = new BaseModel
-            //{
-            //    Date = Convert.ToDateTime(response.Data.Date),
-            //    Name = response.Data.Base
-            //};
-
-            //var baseMapper = _mapper.Map<BaseDto>(baseModel);
-            //var baseId =  _baseRepository.Create(baseMapper);
-
-            //var rateModel = new RateModel
-            //{
-            //     BaseId = baseId,
-            //      Value = 
-            //};
+            List<Dictionary<string, double>> CurrencyAndValue = new List<Dictionary<string, double>>();
 
 
+            CurrencyAndValue.Add(new Dictionary<string, double>
+            {
+                { "AED", response.Data.Rates.AED },
+                { "AFN", response.Data.Rates.AFN },
+                { "JPY", response.Data.Rates.JPY },
+            }
+
+            );
 
 
-
+            SaveDataIntoDb(response.Data, CurrencyAndValue);
 
             Console.WriteLine(response.Content);
+            return response.Data;
+        }
+
+        void SaveDataIntoDb(RatesResponseModel model, List<Dictionary<string, double>> keyValues)
+        {
+            var baseModel = new BaseModel
+            {
+                Date = Convert.ToDateTime(model.Date),
+                Name = model.Base
+            };
+
+            var baseMapper = _mapper.Map<BaseDto>(baseModel);
+            var baseId = _baseRepository.Create(baseMapper);
+
+
+            foreach (var keyValue in keyValues)
+            {
+                foreach (var item in keyValue)
+                {
+
+                    var currencyModel = new CurrencyModel
+                    {
+                        Name = item.Key,
+                    };
+
+                    var currencyMapper = _mapper.Map<CurrencyDto>(currencyModel);
+                    var currencyId = _currencyRepository.Create(currencyMapper);
+
+
+
+
+                    var rateModel = new RateModel
+                    {
+                        BaseId = baseId,
+                        CurrencyId = currencyId,
+                        Value = item.Value
+                    };
+
+                    var rateMapper = _mapper.Map<RateDto>(rateModel);
+                    _rateRepository.Create(rateMapper);
+
+
+                }
+
+            }
         }
     }
 }

@@ -12,9 +12,12 @@ namespace Arvato.Task.Fixer.Mapper
     {
         public FixerProfile()
         {
-            CreateMap<BaseModel,BaseDto>().ReverseMap();
-            CreateMap<CurrencyModel,CurrencyDto>().ReverseMap();
-            CreateMap<RateModel, RateDto>().ReverseMap();
+            CreateMap<BaseModel, BaseDto>();
+            CreateMap<BaseDto, BaseModel>();
+            CreateMap<CurrencyModel, CurrencyDto>();
+            CreateMap<CurrencyDto, CurrencyModel>();
+            CreateMap<RateModel, RateDto>();
+            CreateMap<RateDto, RateModel>();
         }
     }
 }
