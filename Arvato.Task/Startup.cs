@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Hosting;
 using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
+using PetaPoco;
+using PetaPoco.Providers;
 
 namespace Arvato.Task.Console
 {
@@ -56,8 +58,14 @@ namespace Arvato.Task.Console
             services.AddTransient<ICurrencyRepository, CurrencyRepository>();
             services.AddTransient<IRateRepository, RateRepository>();
             services.AddAutoMapper(typeof(FixerProfile));
-
+            services.AddScoped<IDatabase, Database>(ctx => new Database<SqlServerDatabaseProvider>(Configuration["ConnectionStrings:umbracoDbDSN"]));
             services.AddMvc();
+
+            //IDatabase _db = DatabaseConfiguration.Build()
+            //        .UsingConnectionString(Configuration["ConnectionStrings:umbracoDbDSN"])
+            //        .UsingProvider<SqlServerDatabaseProvider>()
+            //        .Create();
+            //services.AddSingleton(_db);
         }
 
 

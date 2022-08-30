@@ -22,7 +22,6 @@ namespace Arvato.Task
             startup.ConfigureServices(services);
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             IApplicationBuilder appBuilder = new ApplicationBuilder(serviceProvider);
-            IRecurringJobManager recurringJobManager = new RecurringJobManager();
 
             startup.Configure(appBuilder);
 
@@ -49,30 +48,27 @@ namespace Arvato.Task
             string symbols = "";
             if (int.Parse(key) == 1)
             {
-                
-                System.Console.WriteLine("Enter To Value format GBP ");
-                to = System.Console.ReadLine();
-
-                System.Console.WriteLine("Enter From Value format NOK");
+                System.Console.WriteLine("Enter From Value is required field. format NOK");
                 from = System.Console.ReadLine();
 
-                System.Console.WriteLine("Enter amount");
+                System.Console.WriteLine("Enter To Value is required field. format GBP ");
+                to = System.Console.ReadLine();
+
+                System.Console.WriteLine("Enter amount is required field.");
                 amount = System.Console.ReadLine();
 
-                System.Console.WriteLine("Enter date is optional format 2022-08-21");
+                System.Console.WriteLine("Enter date is optional field format 2022-08-21");
                 date = System.Console.ReadLine();
             }
 
             if (int.Parse(key) == 2)
             {
-                System.Console.WriteLine("Enter symbols format GBP,JPY but its optional ");
+                System.Console.WriteLine("Enter symbols is optional field. format GBP,JPY ");
                 symbols = System.Console.ReadLine();
 
-                System.Console.WriteLine("Enter base format USD but its optional");
+                System.Console.WriteLine("Enter base is optional field. format USD");
                 bas = System.Console.ReadLine();
             }
-
-        
 
 
             System.Console.WriteLine("Start Time: " + DateTime.Now);
@@ -87,10 +83,10 @@ namespace Arvato.Task
 
                 case 2:
                     var currencyDate = serviceProvider.GetService<IFixerManager>();
-                   //currencyDate.GetLatestCurrency(symbols,bas);
-                    recurringJobManager.AddOrUpdate("Run daily",
-                         () => currencyDate.GetLatestCurrency(symbols, bas),
-                         Cron.Daily);
+                   currencyDate.GetLatestCurrency(symbols,bas);
+                    //recurringJobManager.AddOrUpdate("Run daily",
+                    //     () => currencyDate.GetLatestCurrency(symbols, bas),
+                    //     Cron.Daily);
 
                     break;
 

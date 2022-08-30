@@ -66,10 +66,10 @@ namespace Arvato.Task.Fixer.Managers
             var response = client.Execute<RatesResponseModel>(request);
             _log.Info(string.Format("Response of authorize request: {0}", response.Content));
 
-            List<Dictionary<string, double>> CurrencyAndValue = new List<Dictionary<string, double>>();
+            var dictionary = new List<Dictionary<string, double>>();
 
 
-            CurrencyAndValue.Add(new Dictionary<string, double>
+            dictionary.Add(new Dictionary<string, double>()
             {
                 { "AED", response.Data.Rates.AED },
                 { "AFN", response.Data.Rates.AFN },
@@ -79,7 +79,7 @@ namespace Arvato.Task.Fixer.Managers
             );
 
 
-            SaveDataIntoDb(response.Data, CurrencyAndValue);
+            SaveDataIntoDb(response.Data, dictionary);
 
             Console.WriteLine(response.Content);
             return response.Data;

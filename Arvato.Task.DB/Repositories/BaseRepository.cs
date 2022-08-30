@@ -1,24 +1,16 @@
 ﻿using Arvato.Task.DB.Interfaces;
 using Arvato.Task.DB.Models.Base.Dto;
-using Microsoft.Extensions.Configuration;
 using PetaPoco;
-using PetaPoco.Providers;
 using System;
 
 namespace Arvato.Task.DB.Repositories
 {
     public class BaseRepository : IBaseRepository
     {
-        private string _connectionString;
         private readonly IDatabase _db;
-        public BaseRepository(IConfiguration configuration)
+        public BaseRepository(IDatabase db)
         {
-            _connectionString = configuration["ConnectionStrings:umbracoDbDSN"];
-
-            _db = DatabaseConfiguration.Build()
-                    .UsingConnectionString(_connectionString)
-                    .UsingProvider<SqlServerDatabaseProvider>()
-                    .Create();
+            _db = db;
         }
         public int Create(BaseDto model)
         {

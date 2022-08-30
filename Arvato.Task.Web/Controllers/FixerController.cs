@@ -28,14 +28,14 @@ namespace Arvato.Task.Web.Controllers
         }
 
 
-        [HttpGet]
-        [Route("currency/latest")]
-        public IActionResult GetLatestCurency()
-        {
-            RecurringJob.AddOrUpdate("Run on daily basis",() => _fixerManager.GetLatestCurrency("", ""), Cron.Daily);
+        //[HttpGet]
+        //[Route("currency/latest")]
+        //public IActionResult GetLatestCurency()
+        //{
+        //    RecurringJob.AddOrUpdate("Run on daily basis",() => _fixerManager.GetLatestCurrency("", ""), Cron.Daily);
 
-            return Ok($"Recurring Job Scheduled. Invoice will be mailed Monthly!");
-        }
+        //    return Ok($"Recurring Job Scheduled. Invoice will be mailed Monthly!");
+        //}
 
 
     }

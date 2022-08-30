@@ -12,6 +12,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using PetaPoco;
+using PetaPoco.Providers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,7 +50,8 @@ namespace Arvato.Task.Web
             // Add the processing server as IHostedService
             services.AddHangfireServer();
 
-            services.AddSwaggerGen(c => {
+            services.AddSwaggerGen(c =>
+            {
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "Arvato Task",
@@ -63,8 +66,14 @@ namespace Arvato.Task.Web
             services.AddTransient<IRateRepository, RateRepository>();
             services.AddTransient<IFixerManager, FixerManager>();
             services.AddAutoMapper(typeof(FixerProfile));
+            services.AddScoped<IDatabase, Database>(ctx => new Database<SqlServerDatabaseProvider>(Configuration["ConnectionStrings:umbracoDbDSN"]));
 
             services.AddMvc();
+            //IDatabase _db = DatabaseConfiguration.Build()
+            //                .UsingConnectionString(Configuration["ConnectionStrings:umbracoDbDSN"])
+            //                .UsingProvider<SqlServerDatabaseProvider>()
+            //                .Create();
+            //services.AddSingleton(_db);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -82,9 +91,10 @@ namespace Arvato.Task.Web
             }
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json"," Arvato Task V1 ");
-                    });
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", " Arvato Task V1 ");
+            });
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

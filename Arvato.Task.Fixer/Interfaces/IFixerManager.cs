@@ -4,7 +4,7 @@ namespace Arvato.Task.Fixer.Interfaces
 {
     public interface IFixerManager
     {
-        ConversionResponseModel GetConvert(string to, string from, int amount, string date);
+        ConversionResponseModel GetConvert(string from, string to, int amount, string date);
         RatesResponseModel GetLatestCurrency(string symbols, string bas);
     }
 }
