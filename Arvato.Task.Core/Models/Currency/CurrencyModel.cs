@@ -1,4 +1,4 @@
-﻿namespace Arvato.Task.Fixer.Models.Currency
+﻿namespace Arvato.Task.Core.Models.Currency
 {
     public class CurrencyModel
     {

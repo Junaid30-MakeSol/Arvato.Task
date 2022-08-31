@@ -8,13 +8,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using Arvato.Task.Fixer.Mapper;
-using Microsoft.AspNetCore.Hosting;
-using Hangfire.MemoryStorage;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Hosting;
 using PetaPoco;
 using PetaPoco.Providers;
+using Arvato.Task.Core;
+using Arvato.Task.Core.Interfaces;
+using Arvato.Task.Core.Managers;
 
 namespace Arvato.Task.Console
 {
@@ -52,12 +50,11 @@ namespace Arvato.Task.Console
 
             services.AddLogging();
             services.AddSingleton<IConfiguration>(Configuration);
-            services.AddTransient<IFixerManager, FixerManager>();
-
-            services.AddTransient<IBaseRepository, BaseRepository>();
+            services.AddTransient<IFixerCLient, FixerClient>();
+            services.AddTransient<IRateManager, RateManager>();
             services.AddTransient<ICurrencyRepository, CurrencyRepository>();
             services.AddTransient<IRateRepository, RateRepository>();
-            services.AddAutoMapper(typeof(FixerProfile));
+            services.AddAutoMapper(typeof(RateProfile));
             services.AddScoped<IDatabase, Database>(ctx => new Database<SqlServerDatabaseProvider>(Configuration["ConnectionStrings:umbracoDbDSN"]));
             services.AddMvc();
 

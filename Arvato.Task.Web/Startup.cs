@@ -1,8 +1,10 @@
+using Arvato.Task.Core;
+using Arvato.Task.Core.Interfaces;
+using Arvato.Task.Core.Managers;
 using Arvato.Task.DB.Interfaces;
 using Arvato.Task.DB.Repositories;
 using Arvato.Task.Fixer.Interfaces;
 using Arvato.Task.Fixer.Managers;
-using Arvato.Task.Fixer.Mapper;
 using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Builder;
@@ -15,9 +17,6 @@ using Microsoft.OpenApi.Models;
 using PetaPoco;
 using PetaPoco.Providers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Arvato.Task.Web
 {
@@ -61,11 +60,11 @@ namespace Arvato.Task.Web
 
 
             services.AddRazorPages();
-            services.AddTransient<IBaseRepository, BaseRepository>();
             services.AddTransient<ICurrencyRepository, CurrencyRepository>();
             services.AddTransient<IRateRepository, RateRepository>();
-            services.AddTransient<IFixerManager, FixerManager>();
-            services.AddAutoMapper(typeof(FixerProfile));
+            services.AddTransient<IFixerCLient, FixerClient>();
+            services.AddTransient<IRateManager, RateManager>();
+            services.AddAutoMapper(typeof(RateProfile));
             services.AddScoped<IDatabase, Database>(ctx => new Database<SqlServerDatabaseProvider>(Configuration["ConnectionStrings:umbracoDbDSN"]));
 
             services.AddMvc();

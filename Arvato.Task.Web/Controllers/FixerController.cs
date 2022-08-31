@@ -11,21 +11,21 @@ namespace Arvato.Task.Web.Controllers
     [ApiController]
     public class FixerController : ControllerBase
     {
-        private readonly IFixerManager _fixerManager;
+        private readonly IFixerCLient _fixerManager;
 
-        public FixerController(IFixerManager fixerManager)
+        public FixerController(IFixerCLient fixerManager)
         {
             _fixerManager = fixerManager;
         }
         // GET: api/<FixerController
 
-        [HttpGet]
-        [Route("currency/conversion")]
-        public IActionResult GetCurrencyConvert(QueryModel model)
-        {
-            var data =  _fixerManager.GetConvert(model.To, model.From, model.Amount, model.Date);
-            return Ok(data);
-        }
+        //[HttpGet]
+        //[Route("currency/conversion")]
+        //public IActionResult GetCurrencyConvert(QueryModel model)
+        //{
+        //    var data =  _fixerManager.GetConvert(model.To, model.From, model.Amount, model.Date);
+        //    return Ok(data);
+        //}
 
 
         //[HttpGet]

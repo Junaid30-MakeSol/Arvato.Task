@@ -18,5 +18,11 @@ namespace Arvato.Task.DB.Repositories
             var id = _db.Insert(model);
             return Convert.ToInt32(id);
         }
+
+        public void Delete()
+        {
+            var sql = "Truncate table [Arvato.Task].[dbo].[Currencies]";
+            _db.Execute(sql);
+        }
     }
 }

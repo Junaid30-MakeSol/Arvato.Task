@@ -1,4 +1,6 @@
-﻿namespace Arvato.Task.DB.Models.Rate.Dto
+﻿using System;
+
+namespace Arvato.Task.DB.Models.Rate.Dto
 {
     [PetaPoco.TableName("Rates")]
     [PetaPoco.PrimaryKey("RateId")]
@@ -11,7 +13,9 @@
         public double Value { get; set; }
         [PetaPoco.Column("RateCurrencyId")]
         public int CurrencyId { get; set; }
-        [PetaPoco.Column("RateBaseId")]
-        public int BaseId { get; set; }
+        [PetaPoco.Column("RateBaseCurrencyId")]
+        public int BaseCurrencyId { get; set; }
+        [PetaPoco.Column("RateDate")]
+        public DateTime BaseDate { get; set; }
     }
 }

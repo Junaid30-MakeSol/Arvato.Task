@@ -15,5 +15,11 @@ namespace Arvato.Task.DB.Repositories
         {
             _db.Insert(model);
         }
+
+        public void Delete()
+        {
+            var sql = "Truncate table [Arvato.Task].[dbo].[Rates]";
+            _db.Execute(sql);
+        }
     }
 }

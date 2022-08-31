@@ -17,7 +17,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Arvato.Task.Fixer\Arvato.Task.Fixer.csproj" />
+	  <ProjectReference Include="..\Arvato.Task.Core\Arvato.Task.Core.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="appsettings.json">

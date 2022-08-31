@@ -1,4 +1,5 @@
 ﻿using Arvato.Task.Console;
+using Arvato.Task.Core.Interfaces;
 using Arvato.Task.Fixer.Interfaces;
 using Hangfire;
 using Hangfire.SqlServer;
@@ -77,13 +78,14 @@ namespace Arvato.Task
             switch (int.Parse(key))
             {
                 case 1:
-                    var currencyConversion = serviceProvider.GetService<IFixerManager>();
-                    currencyConversion.GetConvert(to,from,Convert.ToInt32(amount),date);
+                    var currencyConversion = serviceProvider.GetService<IRateManager>();
+                    currencyConversion.GetConvertCurrencyRates(to,from,Convert.ToInt32(amount),date);
                     break;
 
                 case 2:
-                    var currencyDate = serviceProvider.GetService<IFixerManager>();
-                   currencyDate.GetLatestCurrency(symbols,bas);
+                    var rate = serviceProvider.GetService<IRateManager>();
+                    rate.GetLatestCurrencyRates(symbols,bas);
+                   
                     //recurringJobManager.AddOrUpdate("Run daily",
                     //     () => currencyDate.GetLatestCurrency(symbols, bas),
                     //     Cron.Daily);

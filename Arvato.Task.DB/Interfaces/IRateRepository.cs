@@ -5,5 +5,6 @@ namespace Arvato.Task.DB.Interfaces
     public interface IRateRepository
     {
         void Create(RateDto model);
+        void Delete();
     }
 }
