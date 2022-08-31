@@ -42,7 +42,7 @@ namespace Arvato.Task
 
             System.Console.WriteLine("Select what you want to do");
             System.Console.WriteLine("Select 1 for Converting Currency rate");
-            System.Console.WriteLine("Select 2 for Latest Rates Currency data and save data into Database");
+            System.Console.WriteLine("Select 2 for Recurring Latest Currency Rates data and save into Database");
             string key = System.Console.ReadLine();
             string from = "";
             string to = "";
