@@ -1,5 +1,6 @@
 ﻿using Arvato.Task.Core.Interfaces;
 using Arvato.Task.Fixer.Models.Fixer;
+using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Arvato.Task.Web.Controllers
@@ -23,6 +24,15 @@ namespace Arvato.Task.Web.Controllers
             return Ok(data);
         }
 
+
+        [HttpGet]
+        [Route("currency/latest")]
+        public IActionResult GetLatestCurency()
+        {
+            RecurringJob.AddOrUpdate("Run on daily basis", () => _rateManager.GetLatestCurrencyRates(), Cron.Daily);
+
+            return Ok($"Recurring Job Scheduled. Invoice will be mailed Monthly!");
+        }
 
     }
 }

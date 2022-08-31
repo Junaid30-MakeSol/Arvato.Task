@@ -6,6 +6,5 @@ namespace Arvato.Task.Fixer.Interfaces
     {
         RatesResponseModel GetLatestRates();
         RatesResponseModel GetRatesByDate(string date);
-        //RatesResponseModel GetLatestRates(string symbols, string bas);
     }
 }

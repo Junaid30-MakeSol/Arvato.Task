@@ -3,6 +3,7 @@ using Arvato.Task.Fixer.Models.Fixer;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using RestSharp;
+using System;
 using System.Net;
 using System.Reflection;
 
@@ -19,55 +20,60 @@ namespace Arvato.Task.Fixer.Managers
         public RatesResponseModel GetLatestRates()
         {
             _log.Debug($"Started Get Latest Rate");
-            var requestUrl = string.Format(_configuration["Fixer:LatestRates"],"","");
-            var client = new RestClient(requestUrl);
+            try
+            {
+                var authServerHost = _configuration["Fixer:Host"];
 
-            var fixerApiKey = _configuration["Fixer:APIKey"];
-            var request = new RestRequest(Method.GET);
-            request.AddHeader("content-type", "application/json");
-            request.AddHeader("apikey", fixerApiKey);
+                var tokenEndpoint = string.Format(@"{0}fixer/latest", authServerHost);
 
-            var result = client.Execute<RatesResponseModel>(request);
-            if (result != null && result.StatusCode == HttpStatusCode.OK) return result.Data;
+                var client = new RestClient(tokenEndpoint);
 
-            _log.Info(string.Format("Response of authorize request: {0}", result.Content));
-            return null;
+                var fixerApiKey = _configuration["Fixer:APIKey"];
+                var request = new RestRequest(Method.GET);
+                request.AddHeader("content-type", "application/json");
+                request.AddHeader("apikey", fixerApiKey);
+
+                var result = client.Execute<RatesResponseModel>(request);
+                if (result != null && result.StatusCode == HttpStatusCode.OK) return result.Data;
+
+                _log.Info(string.Format("Response of authorize request: {0}", result.Content));
+                return null;
+            }
+            catch (Exception ex)
+            {
+
+                _log.Error($"Error: Get Latest currency", ex);
+                return null;
+            }
         }
 
 
         public RatesResponseModel GetRatesByDate(string date)
         {
             _log.Debug($"Started Get Rate by Date:{date}");
-            var requestUrl = string.Format(_configuration["Fixer:RatesByDate"],date,"","");
-            var client = new RestClient(requestUrl);
+            try
+            {
+                var authServerHost = _configuration["Fixer:Host"];
+                var tokenEndpoint = string.Format(@"{0}fixer/{1}", authServerHost, date);
+                var client = new RestClient(tokenEndpoint);
 
-            var fixerApiKey = _configuration["Fixer:APIKey"];
-            var request = new RestRequest(Method.GET);
-            request.AddHeader("content-type", "application/json");
-            request.AddHeader("apikey", fixerApiKey);
+                var fixerApiKey = _configuration["Fixer:APIKey"];
+                var request = new RestRequest(Method.GET);
+                request.AddHeader("content-type", "application/json");
+                request.AddHeader("apikey", fixerApiKey);
 
-            var result = client.Execute<RatesResponseModel>(request);
-            if (result != null && result.StatusCode == HttpStatusCode.OK) return result.Data;
-            _log.Info(string.Format("Response of authorize request: {0}", result.Content));
-            return result.Data;
+                var result = client.Execute<RatesResponseModel>(request);
+                if (result != null && result.StatusCode == HttpStatusCode.OK) return result.Data;
+                _log.Info(string.Format("Response of authorize request: {0}", result.Content));
+                return result.Data;
+            }
+            catch(Exception ex)
+            {
+
+                _log.Error($"Error: Get Rates by Date:{date}", ex);
+                return null;
+            }
         }
-
-        //public RatesResponseModel GetLatestRates(string symbols, string bas)
-        //{
-        //    _log.Debug($"Started GetLatest Currenecy request with symbols:{symbols} - base: {bas}");
-        //    var requestUrl = string.Format(_configuration["Fixer:LatestRates"], symbols, bas);
-        //    var client = new RestClient(requestUrl);
-
-        //    var fixerApiKey = _configuration["Fixer:APIKey"];
-        //    var request = new RestRequest(Method.GET);
-        //    request.AddHeader("content-type", "application/json");
-        //    request.AddHeader("apikey", fixerApiKey);
-
-        //    var result = client.Execute<RatesResponseModel>(request);
-        //    if (result != null && result.StatusCode == HttpStatusCode.OK) return result.Data;
-        //    _log.Info(string.Format("Response of authorize request: {0}", result.Content));
-        //    return result.Data;
-        //}
 
 
     }

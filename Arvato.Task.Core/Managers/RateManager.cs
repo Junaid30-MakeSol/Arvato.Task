@@ -75,10 +75,9 @@ namespace Arvato.Task.Core.Managers
            var result = _fixerClient.GetLatestRates();
            if (result != null)
            {
-             SaveDataIntoDb(result);
+                SaveDataIntoDb(result);
            }
-           return result;
-            
+            return result;
         }
 
         void SaveDataIntoDb(RatesResponseModel model)

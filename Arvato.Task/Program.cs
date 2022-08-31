@@ -35,6 +35,9 @@ namespace Arvato.Task
             logger.LogDebug("Logger is working!");
 
 
+            var rateManager = serviceProvider.GetService<IRateManager>();
+
+
             // Get Service and call method
 
             System.Console.WriteLine("Select what you want to do");
@@ -45,8 +48,7 @@ namespace Arvato.Task
             string to = "";
             var amount = "";
             string date = "";
-            string bas = "";
-            string symbols = "";
+
             if (int.Parse(key) == 1)
             {
                 System.Console.WriteLine("Enter from value is required field. format NOK");
@@ -62,32 +64,19 @@ namespace Arvato.Task
                 date = System.Console.ReadLine();
             }
 
-            //if (int.Parse(key) == 2)
-            //{
-            //    System.Console.WriteLine("Enter symbols is optional field. format GBP,JPY ");
-            //    symbols = System.Console.ReadLine();
-
-            //    System.Console.WriteLine("Enter base is optional field. format USD");
-            //    bas = System.Console.ReadLine();
-            //}
-
-
             System.Console.WriteLine("Start Time: " + DateTime.Now);
 
 
             switch (int.Parse(key))
             {
                 case 1:
-                    var currencyConversion = serviceProvider.GetService<IRateManager>();
-                    var data = currencyConversion.GetConvertCurrencyRates(from, to ,Convert.ToInt32(amount), date);
+                    rateManager.GetConvertCurrencyRates(from, to ,Convert.ToInt32(amount), date);
                     break;
 
                 case 2:
-                    var rate = serviceProvider.GetService<IRateManager>();
-                    //rate.GetLatestCurrencyRates(symbols,bas);
-
-                    recurringJobManager.AddOrUpdate("Run daily",
-                         () => rate.GetLatestCurrencyRates(),
+                    //rateManager.GetLatestCurrencyRates();
+                    recurringJobManager.AddOrUpdate("run daily",
+                         () => rateManager.GetLatestCurrencyRates(),
                          Cron.Daily);
 
                     break;
@@ -99,7 +88,6 @@ namespace Arvato.Task
             System.Console.WriteLine("End Time: " + DateTime.Now);
 
             System.Console.WriteLine("Press any key to end the program");
-
 
             System.Console.ReadLine();
 
