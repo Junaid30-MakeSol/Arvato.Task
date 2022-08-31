@@ -23,7 +23,7 @@ namespace Arvato.Task
             startup.ConfigureServices(services);
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             IApplicationBuilder appBuilder = new ApplicationBuilder(serviceProvider);
-
+            RecurringJobManager recurringJobManager = new RecurringJobManager();
             startup.Configure(appBuilder);
 
             //configure console logging
@@ -39,7 +39,7 @@ namespace Arvato.Task
 
             System.Console.WriteLine("Select what you want to do");
             System.Console.WriteLine("Select 1 for Converting Currency rate");
-            System.Console.WriteLine("Select 2 for Latest Currency data");
+            System.Console.WriteLine("Select 2 for Latest Rates Currency data and save data into Database");
             string key = System.Console.ReadLine();
             string from = "";
             string to = "";
@@ -49,10 +49,10 @@ namespace Arvato.Task
             string symbols = "";
             if (int.Parse(key) == 1)
             {
-                System.Console.WriteLine("Enter From Value is required field. format NOK");
+                System.Console.WriteLine("Enter from value is required field. format NOK");
                 from = System.Console.ReadLine();
 
-                System.Console.WriteLine("Enter To Value is required field. format GBP ");
+                System.Console.WriteLine("Enter to value is required field. format GBP ");
                 to = System.Console.ReadLine();
 
                 System.Console.WriteLine("Enter amount is required field.");
@@ -62,14 +62,14 @@ namespace Arvato.Task
                 date = System.Console.ReadLine();
             }
 
-            if (int.Parse(key) == 2)
-            {
-                System.Console.WriteLine("Enter symbols is optional field. format GBP,JPY ");
-                symbols = System.Console.ReadLine();
+            //if (int.Parse(key) == 2)
+            //{
+            //    System.Console.WriteLine("Enter symbols is optional field. format GBP,JPY ");
+            //    symbols = System.Console.ReadLine();
 
-                System.Console.WriteLine("Enter base is optional field. format USD");
-                bas = System.Console.ReadLine();
-            }
+            //    System.Console.WriteLine("Enter base is optional field. format USD");
+            //    bas = System.Console.ReadLine();
+            //}
 
 
             System.Console.WriteLine("Start Time: " + DateTime.Now);
@@ -79,16 +79,16 @@ namespace Arvato.Task
             {
                 case 1:
                     var currencyConversion = serviceProvider.GetService<IRateManager>();
-                    currencyConversion.GetConvertCurrencyRates(to,from,Convert.ToInt32(amount),date);
+                    var data = currencyConversion.GetConvertCurrencyRates(from, to ,Convert.ToInt32(amount), date);
                     break;
 
                 case 2:
                     var rate = serviceProvider.GetService<IRateManager>();
-                    rate.GetLatestCurrencyRates(symbols,bas);
-                   
-                    //recurringJobManager.AddOrUpdate("Run daily",
-                    //     () => currencyDate.GetLatestCurrency(symbols, bas),
-                    //     Cron.Daily);
+                    //rate.GetLatestCurrencyRates(symbols,bas);
+
+                    recurringJobManager.AddOrUpdate("Run daily",
+                         () => rate.GetLatestCurrencyRates(),
+                         Cron.Daily);
 
                     break;
 

@@ -9,6 +9,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Collections" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Arvato.Task.DB\Arvato.Task.DB.csproj" />
     <ProjectReference Include="..\Arvato.Task.Fixer\Arvato.Task.Fixer.csproj" />
   </ItemGroup>

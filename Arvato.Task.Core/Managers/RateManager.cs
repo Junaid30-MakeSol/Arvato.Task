@@ -24,20 +24,61 @@ namespace Arvato.Task.Core.Managers
             _rateRepository = rateRepository;
             _mapper = mapper;
         }
-        public void GetConvertCurrencyRates(string from, string to, int amount, string date)
+        public ConversionResponseModel GetConvertCurrencyRates(string from, string to, int amount, string date)
         {
-            throw new NotImplementedException();
+            if (!string.IsNullOrEmpty(date) && from != null && to != null && amount > 0)
+            {
+               var latestRatesByDate = _fixerClient.GetRatesByDate(date);
+               var rate =  CurrencyConversion(latestRatesByDate, from, to, amount);
+
+                var data = new ConversionResponseModel
+                {
+                    Date = date,
+                    Query = new Query
+                    {
+                         Amount = amount,
+                         From = from,
+                         To = to,
+                    },
+                    Result = rate,
+                };
+
+                Console.WriteLine($"from {from} to {to}: {rate}", from, to, rate);
+                return data;
+            }
+
+            else if(string.IsNullOrEmpty(date) && from != null && to != null && amount > 0)
+            {
+                var latestRates = _fixerClient.GetLatestRates();
+                var rate = CurrencyConversion(latestRates, from, to, amount);
+                var data = new ConversionResponseModel
+                {
+                    Date = date,
+                    Query = new Query
+                    {
+                        Amount = amount,
+                        From = from,
+                        To = to,
+                    },
+                    Result = rate,
+
+                };
+
+                Console.WriteLine($"from {from} to {to}: {rate}", from, to, rate);
+                return data;
+            }
+            return null;
         }
 
-        public void GetLatestCurrencyRates(string symbols, string bas)
+        public RatesResponseModel GetLatestCurrencyRates()
         {
-           var result = _fixerClient.GetLatestRates(symbols,bas);
-            if (result != null)
-            {
-                SaveDataIntoDb(result);
-                Console.WriteLine("Data saved successfully!");
-            }
-           
+           var result = _fixerClient.GetLatestRates();
+           if (result != null)
+           {
+             SaveDataIntoDb(result);
+           }
+           return result;
+            
         }
 
         void SaveDataIntoDb(RatesResponseModel model)
@@ -75,6 +116,17 @@ namespace Arvato.Task.Core.Managers
                 _rateRepository.Create(rateMapper);
 
             }
+        }
+
+        double CurrencyConversion(RatesResponseModel model, string from, string to, int amount)
+        {
+            model.Rates.TryGetValue(from, out var returnedFromValue);
+            model.Rates.TryGetValue(to, out var returnedToValue);
+            double fromValue = returnedFromValue;
+            double toValue = returnedToValue;
+            var conversionRate = toValue / fromValue;
+            var result = conversionRate * amount;
+            return result;
         }
     }
 }

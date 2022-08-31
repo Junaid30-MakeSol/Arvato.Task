@@ -1,9 +1,6 @@
-﻿using Arvato.Task.Fixer.Interfaces;
+﻿using Arvato.Task.Core.Interfaces;
 using Arvato.Task.Fixer.Models.Fixer;
-using Hangfire;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
 
 namespace Arvato.Task.Web.Controllers
 {
@@ -11,31 +8,20 @@ namespace Arvato.Task.Web.Controllers
     [ApiController]
     public class FixerController : ControllerBase
     {
-        private readonly IFixerCLient _fixerManager;
+        private readonly IRateManager _rateManager;
 
-        public FixerController(IFixerCLient fixerManager)
+        public FixerController(IRateManager rateManager)
         {
-            _fixerManager = fixerManager;
+            _rateManager = rateManager;
         }
-        // GET: api/<FixerController
 
-        //[HttpGet]
-        //[Route("currency/conversion")]
-        //public IActionResult GetCurrencyConvert(QueryModel model)
-        //{
-        //    var data =  _fixerManager.GetConvert(model.To, model.From, model.Amount, model.Date);
-        //    return Ok(data);
-        //}
-
-
-        //[HttpGet]
-        //[Route("currency/latest")]
-        //public IActionResult GetLatestCurency()
-        //{
-        //    RecurringJob.AddOrUpdate("Run on daily basis",() => _fixerManager.GetLatestCurrency("", ""), Cron.Daily);
-
-        //    return Ok($"Recurring Job Scheduled. Invoice will be mailed Monthly!");
-        //}
+       [HttpGet]
+       [Route("currency/conversion")]
+        public IActionResult GetCurrencyConvert(QueryModel model)
+        {
+            var data = _rateManager.GetConvertCurrencyRates(model.To, model.From, model.Amount, model.Date);
+            return Ok(data);
+        }
 
 
     }
